@@ -1,0 +1,52 @@
+---
+import HomeIcon from "../icons/HomeIcon.astro";
+import AddPacientIcon from "../icons/AddPacientIcon.astro";
+import SideMenuItem from "./SideMenuItem.astro";
+import Button from "./Button.astro";
+import MedicalHistoryIcon from "../icons/MedicalHistoryIcon.astro";
+---
+
+<nav class="flex-1 flex flex-col items-center gap-5 p-4">
+  <div class="basis-1/4 content-center py-4">
+    <div class="flex items-center gap-4">
+      <img
+        src="https://previews.123rf.com/images/yupiramos/yupiramos1607/yupiramos160705616/59613224-el-doctor-avatar-perfil-aisl%C3%B3-el-icono-gr%C3%A1fico-del-ejemplo-del-vector.jpg"
+        alt="Profile picture"
+        class="rounded-full size-20 hover:scale-105 transition duration-200"
+      />
+      <div class="gap-4 text-center">
+        <h2 class="text-zinc-100 font-bold text-lg">Juanito Pérez</h2>
+        <p class="text-zinc-400">Panel médico</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 py-4">
+    <ul class="flex flex-col gap-5">
+      <li>
+        <SideMenuItem href="/">
+          <HomeIcon class="size-8 stroke-zinc-400" /> Home
+        </SideMenuItem>
+      </li>
+      <li>
+        <SideMenuItem href="/">
+          <AddPacientIcon class="size-8 stroke-zinc-400" />
+          Add Pacient
+        </SideMenuItem>
+      </li>
+      <li>
+        <SideMenuItem href="/">
+          <MedicalHistoryIcon class="size-8 stroke-zinc-400" />
+          Medical History
+        </SideMenuItem>
+      </li>
+    </ul>
+  </div>
+
+  <div class="basis-1/12 content-center">
+    <Button
+      class="bg-slate-700 text-zinc-100 hover:bg-slate-600"
+      title="Logout"
+    />
+  </div>
+</nav>

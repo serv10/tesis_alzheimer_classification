@@ -1,0 +1,26 @@
+---
+import SideMenuItem from "@components/SideMenuItem.astro";
+import ArrowLeftIcon from "@icons/ArrowLeftIcon.astro";
+import LogoutIcon from "@icons/LogoutIcon.astro";
+---
+
+<nav class="flex justify-between items-center px-2">
+  <ul>
+    <SideMenuItem>
+      <ArrowLeftIcon class="w-7 h-7 cursor-pointer" />
+    </SideMenuItem>
+  </ul>
+
+  <ul class="flex gap-3">
+    <SideMenuItem>
+      <img
+        src="https://previews.123rf.com/images/yupiramos/yupiramos1607/yupiramos160705616/59613224-el-doctor-avatar-perfil-aisl%C3%B3-el-icono-gr%C3%A1fico-del-ejemplo-del-vector.jpg"
+        alt="Profile picture"
+        class="rounded-full w-9 h-9 cursor-pointer"
+      />
+    </SideMenuItem>
+    <SideMenuItem>
+      <LogoutIcon class="w-7 h-7 cursor-pointer" />
+    </SideMenuItem>
+  </ul>
+</nav>
