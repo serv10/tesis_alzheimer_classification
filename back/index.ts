@@ -16,6 +16,7 @@ import morgan from "morgan";
 import multer from "multer";
 import path from "path";
 import mysql from "mysql2/promise";
+import * as tf from "@tensorflow/tfjs";
 
 const storage = multer.diskStorage({
   destination: function (_req, _file, cb) {
@@ -55,7 +56,7 @@ const upload = multer({
 });
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4001;
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -65,8 +66,8 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
-  idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
+  maxIdle: 10,
+  idleTimeout: 60000,
   queueLimit: 0,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
@@ -82,7 +83,13 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
   if (!file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
-  // 3. Save dataForm to database
+  // 3. Use model to classify RMI file
+  console.log("Loading model...");
+  const model = await tf.loadLayersModel(
+    "file:///Users/sebasramos/San Marcos/Tesis/aporte/Sistema/Principal/back/tfjs_model/model.json"
+  );
+  console.log("Model loaded");
+  // 4. Save dataForm to database
   try {
     const { dni, name, lastName, password } = req.body;
 
@@ -91,7 +98,7 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
       [dni, name, lastName, password, file.path]
     );
 
-    // 4. Return response
+    // 5. Return response
     return res.status(200).json({ message: "File uploaded successfully" });
   } catch (error: any) {
     return res.status(500).json({

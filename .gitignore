@@ -30,4 +30,6 @@ pids/
 .bun.env
 # Ignore bun compiled files
 dist/
+# Model files
+*.bin
 

@@ -74,7 +74,7 @@ export const ExaminePatient = () => {
 
         console.log(result);
       } catch (error) {
-        console.error("Error al enviar los datos:", error);
+        console.error("Error uploading file:", error);
       }
     }
   };
@@ -88,9 +88,9 @@ export const ExaminePatient = () => {
 
   const isInputsCompleted = (): boolean => {
     return (
-      Boolean(state.selectedImage) ||
-      state.dni !== "" ||
-      state.name !== "" ||
+      Boolean(state.selectedImage) &&
+      state.dni !== "" &&
+      state.name !== "" &&
       state.lastName !== ""
     );
   };
