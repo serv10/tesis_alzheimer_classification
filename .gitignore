@@ -30,3 +30,5 @@ pids/
 .bun.env
 # Ignore bun compiled files
 dist/
+# packages
+package-lock.json
