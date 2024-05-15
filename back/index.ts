@@ -7,6 +7,7 @@ declare module "bun" {
     DB_PORT: number;
     PORT: number;
     PATH_UPLOADED_IMAGES: string;
+    PATH_MODEL_JSON: string;
   }
 }
 
@@ -16,7 +17,9 @@ import morgan from "morgan";
 import multer from "multer";
 import path from "path";
 import mysql from "mysql2/promise";
+import sizeOf from "image-size";
 import * as tf from "@tensorflow/tfjs";
+import fs from "fs";
 
 const storage = multer.diskStorage({
   destination: function (_req, _file, cb) {
@@ -76,6 +79,16 @@ const pool = mysql.createPool({
 app.use(cors());
 app.use(morgan("dev"));
 
+let model: tf.GraphModel;
+(async () => {
+  try {
+    model = await tf.loadGraphModel(`file://${process.env.PATH_MODEL_JSON}`);
+    console.log("Model loaded successfully");
+  } catch (error) {
+    console.error("Error uploading model:", error);
+  }
+})();
+
 app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
   // 1. Extract file from request
   const { file } = req;
@@ -84,13 +97,34 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
     return res.status(400).json({ message: "No file uploaded" });
   }
   // 3. Use model to classify RMI file
-  console.log("Loading model...");
-  const model = await tf.loadLayersModel(
-    "file:///Users/sebasramos/San Marcos/Tesis/aporte/Sistema/Principal/back/tfjs_model/model.json"
-  );
-  console.log("Model loaded");
-  // 4. Save dataForm to database
   try {
+    const dimensions = sizeOf(file.path);
+    console.log(dimensions.width, dimensions.height);
+
+    const output = {};
+    try {
+      // Preprocess image
+      const image = fs.readFileSync(file.path);
+      let tensor = tf.node.decodeImage(image);
+      const resizedImage = tf.image.resizeNearestNeighbor(tensor, [128, 128]);
+      const input = resizedImage.toFloat().div(tf.scalar(255));
+
+      // Make predictions
+      const predictions = await model.predict(input);
+
+      console.log(predictions);
+
+      // Send response
+      res.status(200).json(output);
+    } catch (error) {
+      console.error("Error predicting:", error);
+      res.status(500).json(output);
+    }
+  } catch (error) {
+    console.error("Error classifying model:", error);
+  }
+  // 4. Save dataForm to database
+  /* try {
     const { dni, name, lastName, password } = req.body;
 
     const [results, fields] = await pool.execute(
@@ -104,7 +138,7 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
     return res.status(500).json({
       message: `[examinePatient]: ${error.message}`,
     });
-  }
+  } */
 });
 
 app.listen(port, () => {
