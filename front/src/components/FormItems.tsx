@@ -19,6 +19,7 @@ interface PropsButton {
   className?: string;
   disabled?: boolean;
   title: string;
+  onClick?: () => void;
 }
 
 interface PropsHeading {
@@ -75,12 +76,14 @@ export const Button = ({
   className,
   disabled = false,
   title,
+  onClick,
 }: PropsButton) => {
   return (
     <button
       type={type}
       className={`text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition duration-200 ${className}`}
       disabled={disabled}
+      onClick={onClick}
     >
       {title}
     </button>

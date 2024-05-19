@@ -34,6 +34,8 @@ const classificationImages: { [key: string]: string } = {
 
 export const ExaminePatient = () => {
   const [state, setState] = useState<FormState>(initialState);
+  const [openModal, setOpenModal] = useState(false);
+  const [prediction, setPrediction] = useState("");
 
   const getRealClassificationImage = (image: File): string => {
     const fileName = image.name;
@@ -70,6 +72,10 @@ export const ExaminePatient = () => {
     }));
   };
 
+  const handleToggleModal = () => {
+    setOpenModal((prev) => !prev);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -88,13 +94,17 @@ export const ExaminePatient = () => {
       formData.append("real", real);
 
       try {
-        const result = await examinePatient(formData, (value: number) =>
+        const response = await examinePatient(formData, (value: number) =>
           setState((prevState) => ({ ...prevState, progress: value }))
         );
 
-        console.log(result);
+        const { prediction: predictionBack } = response.data;
 
-        <MessagePrediction modelName="EfficientNetV2B0" prediction="" />;
+        setPrediction(classificationImages[predictionBack]);
+        setOpenModal(true);
+
+        console.log(real);
+        console.log(prediction);
       } catch (error) {
         console.error("Error uploading file:", error);
       }
@@ -119,6 +129,15 @@ export const ExaminePatient = () => {
 
   return (
     <>
+      {prediction && (
+        <MessagePrediction
+          modelName="EfficientNetV2B0"
+          prediction={prediction}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+        />
+      )}
+
       <form
         className="max-w-md px-5 w-5/12 py-3"
         onSubmit={handleSubmit}
@@ -155,16 +174,26 @@ export const ExaminePatient = () => {
           />
         </div>
         <div className="text-center">
-          <Button
-            type="submit"
-            title="Examine"
-            className={
-              isInputsCompleted()
-                ? "bg-blue-950 hover:bg-blue-950/80 cursor-pointer"
-                : "bg-blue-950 opacity-60"
-            }
-            disabled={!isInputsCompleted()}
-          />
+          {!prediction ? (
+            <Button
+              type="submit"
+              title="Examine"
+              className={
+                isInputsCompleted()
+                  ? "bg-blue-950 hover:bg-blue-950/80 cursor-pointer"
+                  : "bg-blue-950 opacity-60"
+              }
+              disabled={!isInputsCompleted()}
+            />
+          ) : (
+            <Button
+              onClick={handleToggleModal}
+              title="Show Results"
+              className={"bg-blue-950 hover:bg-blue-950/80 cursor-pointer"}
+              disabled={false}
+              type="button"
+            />
+          )}
         </div>
       </form>
       <div className="w-[55%] flex flex-col justify-center items-center px-5 py-3 gap-5">

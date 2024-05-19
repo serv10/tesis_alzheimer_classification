@@ -118,7 +118,12 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
     console.log(realIndex, predictionIndex);
 
     // 5. Return response
-    return res.status(200).json({ message: "File uploaded successfully" });
+    return res
+      .status(200)
+      .json({
+        message: "File uploaded successfully",
+        prediction: classifyImage(prediction),
+      });
   } catch (error: any) {
     return res.status(500).json({
       message: `[examinePatient]: ${error.message}`,
