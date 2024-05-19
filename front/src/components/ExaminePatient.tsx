@@ -3,6 +3,7 @@ import type { UploadStatus } from "@interfaces/interface";
 import { Button, Heading, Input, Label } from "@components/FormItems";
 import { ImageUploadIcon } from "@icons/ImageUploadIcon";
 import { examinePatient } from "@rootNode/api";
+import MessagePrediction from "@modals/MessagePrediction";
 
 interface FormState {
   selectedImage: File | null;
@@ -34,26 +35,6 @@ const classificationImages: { [key: string]: string } = {
 export const ExaminePatient = () => {
   const [state, setState] = useState<FormState>(initialState);
 
-  const createArrayAcurracy = (numberTrue: number) => {
-    let array: boolean[] = new Array(numberTrue)
-      .fill(true)
-      .concat(new Array(100 - numberTrue).fill(false));
-
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-
-    return array;
-  };
-
-  const arrayAccuracy: boolean[] = createArrayAcurracy(5);
-
-  const getRandomValue = (array: boolean[]): boolean => {
-    const randomIndex = Math.floor(Math.random() * array.length);
-    return array[randomIndex];
-  };
-
   const getRealClassificationImage = (image: File): string => {
     const fileName = image.name;
     const nameWithoutExtension = fileName.substring(
@@ -61,19 +42,6 @@ export const ExaminePatient = () => {
       fileName.lastIndexOf(".")
     );
     return nameWithoutExtension.split("_")[0];
-  };
-
-  const getClassificationPosition = (realValue: string): number => {
-    const keys = Object.keys(classificationImages);
-    return keys.indexOf(realValue);
-  };
-
-  const chooseAnotherClassificationValue = (
-    realClassification: string
-  ): string => {
-    let keys = Object.keys(classificationImages);
-    keys = keys.filter((key) => key !== realClassification);
-    return keys[Math.floor(Math.random() * keys.length)];
   };
 
   const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
@@ -110,29 +78,14 @@ export const ExaminePatient = () => {
     const formData = new FormData();
 
     if (selectedImage) {
-      const predictionCorrect: boolean = getRandomValue(arrayAccuracy);
-
       const real = getRealClassificationImage(selectedImage);
-      const realIndex: number = getClassificationPosition(real) + 1;
-
-      let prediction: string = "";
-      let predictionIndex: number = 0;
-
-      if (predictionCorrect) {
-        prediction = real;
-        predictionIndex = realIndex;
-      } else {
-        prediction = chooseAnotherClassificationValue(real);
-        predictionIndex = getClassificationPosition(prediction) + 1;
-      }
 
       formData.append("dni", dni);
       formData.append("name", name);
       formData.append("lastName", lastName);
       formData.append("password", "0");
       formData.append("image", selectedImage);
-      formData.append("real", realIndex.toString());
-      formData.append("prediction", predictionIndex.toString());
+      formData.append("real", real);
 
       try {
         const result = await examinePatient(formData, (value: number) =>
@@ -141,8 +94,7 @@ export const ExaminePatient = () => {
 
         console.log(result);
 
-        console.log(real);
-        console.log(prediction);
+        <MessagePrediction modelName="EfficientNetV2B0" prediction="" />;
       } catch (error) {
         console.error("Error uploading file:", error);
       }

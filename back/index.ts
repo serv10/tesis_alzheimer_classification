@@ -17,6 +17,7 @@ import morgan from "morgan";
 import multer from "multer";
 import path from "path";
 import mysql from "mysql2/promise";
+import { classifyImage, getClassificationPosition } from "./predictImage";
 
 const storage = multer.diskStorage({
   destination: function (_req, _file, cb) {
@@ -94,18 +95,27 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
     return res.status(400).json({ message: "No file uploaded" });
   }
   // 3. Use model to classify RMI file
+  const { real } = req.body;
+
+  const realIndex = getClassificationPosition(real) + 1;
+  const prediction = classifyImage(real);
+  const predictionIndex = getClassificationPosition(prediction) + 1;
 
   // 4. Save dataForm to database
   try {
-    const { dni, name, lastName, password, real, prediction } = req.body;
+    const { dni, name, lastName, password } = req.body;
 
-    const [results, fields] = await pool.execute(
-      "CALL ExaminePatient(?,?,?,?,?,?,?)",
-      [dni, name, lastName, password, file.path, real, prediction]
-    );
+    await pool.execute("CALL ExaminePatient(?,?,?,?,?,?,?)", [
+      dni,
+      name,
+      lastName,
+      password,
+      file.path,
+      realIndex,
+      predictionIndex,
+    ]);
 
-    console.log(results);
-    console.log(fields);
+    console.log(realIndex, predictionIndex);
 
     // 5. Return response
     return res.status(200).json({ message: "File uploaded successfully" });

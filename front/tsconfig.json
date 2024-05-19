@@ -9,6 +9,7 @@
       "@layouts/*": ["src/layouts/*"],
       "@icons/*": ["src/icons/*"],
       "@interfaces/*": ["src/interfaces/*"],
+      "@modals/*": ["src/modals/*"],
       "@rootNode/*": ["src/*"]
     }
   }
