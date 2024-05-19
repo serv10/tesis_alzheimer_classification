@@ -1,9 +1,11 @@
 ---
+import type { TypeButton } from "@interfaces/interface";
+
 interface Props {
   title: string;
   class?: string;
   disabled?: boolean;
-  type: "button" | "submit" | "reset";
+  type: TypeButton;
 }
 const { title, class: ClassName, disabled = false, type } = Astro.props;
 ---
