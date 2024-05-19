@@ -4,6 +4,8 @@ import { Button, Heading, Input, Label } from "@components/FormItems";
 import { ImageUploadIcon } from "@icons/ImageUploadIcon";
 import { examinePatient } from "@rootNode/api";
 import MessagePrediction from "@modals/MessagePrediction";
+import { Icon } from "@iconify/react";
+import { Datepicker } from "flowbite-react";
 
 interface FormState {
   selectedImage: File | null;
@@ -13,6 +15,7 @@ interface FormState {
   dni: string;
   name: string;
   lastName: string;
+  birthDate: Date;
 }
 
 const initialState = {
@@ -23,6 +26,7 @@ const initialState = {
   dni: "",
   name: "",
   lastName: "",
+  birthDate: new Date(),
 };
 
 const classificationImages: { [key: string]: string } = {
@@ -76,6 +80,19 @@ export const ExaminePatient = () => {
     setOpenModal((prev) => !prev);
   };
 
+  const cleanImage = () => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedImage: null,
+      srcImageUpload: "",
+    }));
+  };
+
+  const cleanForm = () => {
+    setState(initialState);
+    setPrediction("");
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -92,6 +109,7 @@ export const ExaminePatient = () => {
       formData.append("password", "0");
       formData.append("image", selectedImage);
       formData.append("real", real);
+      formData.append("birthDate", state.birthDate.toISOString().split("T")[0]);
 
       try {
         const response = await examinePatient(formData, (value: number) =>
@@ -102,9 +120,6 @@ export const ExaminePatient = () => {
 
         setPrediction(classificationImages[predictionBack]);
         setOpenModal(true);
-
-        console.log(real);
-        console.log(prediction);
       } catch (error) {
         console.error("Error uploading file:", error);
       }
@@ -153,6 +168,7 @@ export const ExaminePatient = () => {
             id="dni"
             type="text"
             onChange={handleChange}
+            value={state.dni}
           />
         </div>
         <div className="mb-5">
@@ -162,6 +178,7 @@ export const ExaminePatient = () => {
             id="name"
             type="text"
             onChange={handleChange}
+            value={state.name}
           />
         </div>
         <div className="mb-5">
@@ -171,10 +188,25 @@ export const ExaminePatient = () => {
             id="lastName"
             type="text"
             onChange={handleChange}
+            value={state.lastName}
           />
         </div>
-        <div className="text-center">
-          {!prediction ? (
+        <div className="mb-5">
+          <Label label="BirthDate" id="birtDate" />
+          <Datepicker
+            minDate={new Date(1900, 0, 1)}
+            maxDate={new Date()}
+            value={state.birthDate.toISOString().split("T")[0]}
+            onSelectedDateChanged={(date) => {
+              setState((prevState) => ({
+                ...prevState,
+                birthDate: date,
+              }));
+            }}
+          />
+        </div>
+        {!prediction ? (
+          <div className="text-center">
             <Button
               type="submit"
               title="Examine"
@@ -185,7 +217,9 @@ export const ExaminePatient = () => {
               }
               disabled={!isInputsCompleted()}
             />
-          ) : (
+          </div>
+        ) : (
+          <div className="flex justify-around">
             <Button
               onClick={handleToggleModal}
               title="Show Results"
@@ -193,8 +227,17 @@ export const ExaminePatient = () => {
               disabled={false}
               type="button"
             />
-          )}
-        </div>
+            <Button
+              onClick={cleanForm}
+              title="Clean Form"
+              className={
+                "bg-zinc-50 border border-slate-900 cursor-pointer !text-slate-900 hover:bg-gray-200/50"
+              }
+              disabled={false}
+              type="button"
+            />
+          </div>
+        )}
       </form>
       <div className="w-[55%] flex flex-col justify-center items-center px-5 py-3 gap-5">
         <h4 className="text-gray-900 text-xl font-bold">Upload</h4>
@@ -219,12 +262,19 @@ export const ExaminePatient = () => {
             </label>
           </div>
         ) : (
-          <div className="w-full border-2 border-slate-900/30 border-dashed rounded-lg bg-gray-50 h-96 p-0.5">
+          <div className="relative w-full border-2 border-slate-900/30 border-dashed rounded-lg bg-gray-50 h-96 p-0.5">
             <img
               className="size-full rounded-lg "
               src={state.srcImageUpload}
               alt="alzheimer"
             />
+            {!prediction && (
+              <Icon
+                className="absolute bottom-2.5 right-2.5 cursor-pointer hover:scale-[1.2] transition duration-[250ms] text-white text-3xl"
+                icon="mdi:trash-can-empty"
+                onClick={cleanImage}
+              />
+            )}
           </div>
         )}
       </div>

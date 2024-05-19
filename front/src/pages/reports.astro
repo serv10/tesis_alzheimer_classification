@@ -1,0 +1,12 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { ReportPatients } from "@components/Reports";
+---
+
+<Layout title="Azlheimer Classification Website">
+  <main class="h-full max-w-5xl m-auto flex items-center justify-center p-5">
+    <div class="flex justify-between w-full">
+      <ReportPatients client:load />
+    </div>
+  </main>
+</Layout>

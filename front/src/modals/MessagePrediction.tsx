@@ -25,7 +25,7 @@ export default function MessagePrediction({
           <div className="space-y-6">
             <p className="text-base leading-relaxed text-gray-500 ">
               The image diagnosis indicates that the result is:
-              <span className="font-bold"> {prediction}</span>
+              <span className="font-bold text-zinc-950"> {prediction}</span>
             </p>
           </div>
         </Modal.Body>

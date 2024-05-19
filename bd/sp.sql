@@ -11,15 +11,16 @@ CREATE PROCEDURE RegisterUser (
     IN p_dni VARCHAR(8),
     IN p_name VARCHAR(255),
     IN p_last_name VARCHAR(255),
-    IN p_password VARCHAR(255)
+    IN p_password VARCHAR(255),
+    IN p_birth_date DATE
 )
 BEGIN
 	IF (p_password = 0) THEN
-		INSERT INTO User (dni, name, last_name, user_type)
-		VALUES (p_dni, p_name, p_last_name, 2);
+		INSERT INTO User (dni, name, last_name, user_type, birth_date)
+		VALUES (p_dni, p_name, p_last_name, 2, p_birth_date);
 	ELSE
-		INSERT INTO Usuario (dni, name, las_name, password, user_type)
-		VALUES (p_dni, p_name, p_last_name,p_password, 1);
+		INSERT INTO Usuario (dni, name, las_name, password, user_type, birth_date)
+		VALUES (p_dni, p_name, p_last_name,p_password, 1, p_birth_date);
     END IF; 
         
 	SELECT 1 AS resultado, 'Patient successfully registered' AS mensaje;
@@ -32,7 +33,8 @@ CREATE PROCEDURE ExaminePatient (
     IN p_password VARCHAR(255),
     IN p_image_path VARCHAR(255),
     IN p_real_prediction INT,
-    IN p_value_prediction INT
+    IN p_value_prediction INT,
+    IN p_birth_date DATE
 )
 BEGIN
 	-- 1. Obtener el nombre y la extension de la ruta
@@ -42,7 +44,7 @@ BEGIN
 	-- 2. Verificar existencia del paciente ingresado
     IF CheckPatientExistence(p_dni) = 0 THEN
 		-- 3. Si no existe, registrarlo 
-		CALL RegisterUser(p_dni,p_name,p_last_name,p_password);
+		CALL RegisterUser(p_dni,p_name,p_last_name,p_password,p_birth_date);
     END IF;
 	-- 4. Asociar la imagen al paciente
 	INSERT INTO Image (name, path, extension, user_id, real_value, prediction_value)

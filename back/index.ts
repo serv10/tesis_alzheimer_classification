@@ -103,9 +103,9 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
 
   // 4. Save dataForm to database
   try {
-    const { dni, name, lastName, password } = req.body;
+    const { dni, name, lastName, password, birthDate } = req.body;
 
-    await pool.execute("CALL ExaminePatient(?,?,?,?,?,?,?)", [
+    await pool.execute("CALL ExaminePatient(?,?,?,?,?,?,?,?)", [
       dni,
       name,
       lastName,
@@ -113,17 +113,14 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
       file.path,
       realIndex,
       predictionIndex,
+      birthDate,
     ]);
 
-    console.log(realIndex, predictionIndex);
-
     // 5. Return response
-    return res
-      .status(200)
-      .json({
-        message: "File uploaded successfully",
-        prediction: classifyImage(prediction),
-      });
+    return res.status(200).json({
+      message: "File uploaded successfully",
+      prediction: classifyImage(prediction),
+    });
   } catch (error: any) {
     return res.status(500).json({
       message: `[examinePatient]: ${error.message}`,

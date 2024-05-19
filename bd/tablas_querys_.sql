@@ -64,3 +64,23 @@ ADD CONSTRAINT fk_prediction_value FOREIGN KEY (prediction_value) REFERENCES Ima
 
 INSERT INTO Image (name, path, extension, user_id,real_value,prediction_value)
 VALUES ('imagen1', '/ruta/de/imagen1.jpg', 'jpg', '71696801',1,1);
+
+----
+ALTER TABLE Image DROP FOREIGN KEY image_ibfk_1;
+TRUNCATE TABLE Image;
+TRUNCATE TABLE User;
+ALTER TABLE Image ADD CONSTRAINT image_ibfk_1 FOREIGN KEY (user_id) REFERENCES User(dni);
+
+ALTER TABLE USER
+ADD COLUMN birth_date DATE NOT NULL;
+
+INSERT INTO User (dni, name, last_name, password, user_type, birth_date)
+VALUES ('71696801', 'Doctor', 'Apellido', '123', 1, "1980-12-12");
+
+INSERT INTO User (dni,  name, last_name, user_type, birth_date)
+VALUES 
+	('71696802', 'Paciente1', 'Apellido1', 2, "1980-12-12"),
+	('71696803', 'Paciente2', 'Apellido2', 2, "1950-01-23");
+    
+INSERT INTO Image (name, path, extension, user_id,real_value,prediction_value)
+VALUES ('imagen1', '/ruta/de/imagen1.jpg', 'jpg', '71696801',1,1);

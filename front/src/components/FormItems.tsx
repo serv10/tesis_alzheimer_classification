@@ -11,6 +11,7 @@ interface PropsInput {
   id: string;
   placeholder: string;
   className?: string;
+  value: string;
   onChange: (name: string, value: string) => void;
 }
 
@@ -51,6 +52,7 @@ export const Input = ({
   id,
   className,
   placeholder,
+  value,
   onChange,
 }: PropsInput) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +65,7 @@ export const Input = ({
       type={type}
       id={id}
       name={id}
+      value={value}
       className={`shadow-sm border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:outline-none ${className}`}
       placeholder={placeholder}
       onChange={handleChange}

@@ -4,6 +4,7 @@ import AddPacientIcon from "../icons/AddPacientIcon.astro";
 import SideMenuItem from "./SideMenuItem.astro";
 import Button from "./Button.astro";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon.astro";
+import { Icon } from "astro-icon/components";
 ---
 
 <nav class="flex-1 flex flex-col items-center gap-5 p-4">
@@ -25,19 +26,20 @@ import MedicalHistoryIcon from "../icons/MedicalHistoryIcon.astro";
     <ul class="flex flex-col gap-5">
       <li>
         <SideMenuItem href="/">
-          <HomeIcon class="size-8 stroke-zinc-400" /> Home
+          <Icon name="mdi:home" class="size-7 stroke-zinc-400" />
+          Home
         </SideMenuItem>
       </li>
       <li>
         <SideMenuItem href="/">
-          <AddPacientIcon class="size-8 stroke-zinc-400" />
-          Add Pacient
-        </SideMenuItem>
-      </li>
-      <li>
-        <SideMenuItem href="/">
-          <MedicalHistoryIcon class="size-8 stroke-zinc-400" />
+          <Icon name="mdi:clipboard-text" class="size-7 stroke-zinc-400" />
           Medical History
+        </SideMenuItem>
+      </li>
+      <li>
+        <SideMenuItem href="/reports">
+          <Icon name="mdi:report-line" class="size-7 stroke-zinc-400" />
+          Report Pacient
         </SideMenuItem>
       </li>
     </ul>
