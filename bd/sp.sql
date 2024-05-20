@@ -87,3 +87,19 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE GetPacientData()
+BEGIN
+	SELECT image.user_id as dni,
+           u.name as name,
+           u.last_name as last_name,
+           prediction_value,
+           extension as extension,
+           DATE(u.registration_date) AS registration_date
+    FROM image
+    INNER JOIN alzheimer_classification.user AS u
+    ON image.user_id = u.dni;
+END //
+delimiter ;

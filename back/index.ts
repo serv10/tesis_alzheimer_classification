@@ -181,6 +181,23 @@ app.get("/api/GetAlzheimerCountsByAgeAndType", (_req, res) => {
   }
 });
 
+
+app.get("/user", async (req, res) => {
+  try {
+    pool.execute<ProcedureCallPacket<[RowDataPacket[], ResultSetHeader]>>(
+      "CALL GetPacientData()",
+      (_err: any, result: [RowDataPacket[], ResultSetHeader]) => {
+        const [rowDataPackets, _resultSetHeader] = result;
+        return res.status(200).json(rowDataPackets);
+      }
+    );
+  } catch (error: any) {
+    return res.status(500).json({
+      message: `[user]: ${error.message}`,
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
