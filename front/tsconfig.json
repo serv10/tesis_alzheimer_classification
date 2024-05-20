@@ -10,7 +10,8 @@
       "@icons/*": ["src/icons/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@modals/*": ["src/modals/*"],
-      "@rootNode/*": ["src/*"]
+      "@constants/*": ["src/constants/*"],
+      "@dashboards/*": ["src/dashboards/*"]
     }
   }
 }

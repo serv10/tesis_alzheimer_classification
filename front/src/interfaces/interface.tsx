@@ -12,3 +12,14 @@ export interface ImageUploadProps {
   uploadStatus: UploadStatus;
   setUploadStatus: React.Dispatch<React.SetStateAction<UploadStatus>>;
 }
+
+export interface FormState {
+  selectedImage: File | null;
+  progress: number;
+  uploadStatus: UploadStatus;
+  srcImageUpload: string;
+  dni: string;
+  name: string;
+  lastName: string;
+  birthDate: Date;
+}

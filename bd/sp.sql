@@ -51,5 +51,39 @@ BEGIN
 	VALUES (image_name, p_image_path, image_extension, p_dni, p_real_prediction, p_value_prediction);
 END //
 
+-- 19/05/2024
+
+CREATE PROCEDURE GetAlzheimerCountsByClass()
+BEGIN
+	SELECT IC.Description, COUNT(*) Count
+	FROM User U
+		JOIN Image I ON I.user_id = U.dni
+		JOIN ImageClassification IC ON IC.id = I.real_value
+	GROUP BY IC.Description
+	ORDER BY FIELD(IC.Description, 'Non Demented', 'Very Mild Demented', 'Mild Demented', 'Moderate Demented');
+END //
+
+
+
+CREATE PROCEDURE GetPredictionCountsByClass()
+BEGIN
+	SELECT IC.Description, COUNT(*) Count
+	FROM User U
+		JOIN Image I ON I.user_id = U.dni
+		JOIN ImageClassification IC ON IC.id = I.prediction_value
+	GROUP BY IC.Description
+	ORDER BY FIELD(IC.Description, 'Non Demented', 'Very Mild Demented', 'Mild Demented', 'Moderate Demented');
+END //
+
+CREATE PROCEDURE GetAlzheimerCountsByAgeAndType()
+BEGIN
+	SELECT IC.Description, FLOOR(DATEDIFF(CURDATE(), U.birth_date) / 365.25) AS Age,COUNT(*) Count
+	FROM User U
+		JOIN Image I ON I.user_id = U.dni
+		JOIN ImageClassification IC ON IC.id = I.real_value
+	WHERE U.user_type <> 1
+	GROUP BY Age, IC.Description
+	ORDER BY Age;
+END //
 
 DELIMITER ;

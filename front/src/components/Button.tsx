@@ -5,7 +5,7 @@ import type {
   UploadStatus,
 } from "../interface/interface";
 import axios from "axios";
-import { examinePatient } from "../api";
+import { examinePatient } from "src/api";
 
 interface Props {
   className?: string;

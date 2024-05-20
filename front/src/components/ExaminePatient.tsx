@@ -1,22 +1,12 @@
 import { useState, type ChangeEvent } from "react";
-import type { UploadStatus } from "@interfaces/interface";
+import type { FormState, UploadStatus } from "@interfaces/interface";
 import { Button, Heading, Input, Label } from "@components/FormItems";
 import { ImageUploadIcon } from "@icons/ImageUploadIcon";
-import { examinePatient } from "@rootNode/api";
+import { examinePatient } from "src/api";
 import MessagePrediction from "@modals/MessagePrediction";
 import { Icon } from "@iconify/react";
 import { Datepicker } from "flowbite-react";
-
-interface FormState {
-  selectedImage: File | null;
-  progress: number;
-  uploadStatus: UploadStatus;
-  srcImageUpload: string;
-  dni: string;
-  name: string;
-  lastName: string;
-  birthDate: Date;
-}
+import { imageClassification } from "@constants/imageClassification";
 
 const initialState = {
   selectedImage: null,
@@ -27,13 +17,6 @@ const initialState = {
   name: "",
   lastName: "",
   birthDate: new Date(),
-};
-
-const classificationImages: { [key: string]: string } = {
-  non: "Non Demented",
-  verymild: "Very Mild Demented",
-  mild: "Mild Demented",
-  moderate: "Moderate Demented",
 };
 
 export const ExaminePatient = () => {
@@ -48,6 +31,10 @@ export const ExaminePatient = () => {
       fileName.lastIndexOf(".")
     );
     return nameWithoutExtension.split("_")[0];
+  };
+
+  const convertDateToString = (date: Date): string => {
+    return date.toISOString().split("T")[0];
   };
 
   const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +96,7 @@ export const ExaminePatient = () => {
       formData.append("password", "0");
       formData.append("image", selectedImage);
       formData.append("real", real);
-      formData.append("birthDate", state.birthDate.toISOString().split("T")[0]);
+      formData.append("birthDate", convertDateToString(state.birthDate));
 
       try {
         const response = await examinePatient(formData, (value: number) =>
@@ -118,7 +105,7 @@ export const ExaminePatient = () => {
 
         const { prediction: predictionBack } = response.data;
 
-        setPrediction(classificationImages[predictionBack]);
+        setPrediction(imageClassification[predictionBack]);
         setOpenModal(true);
       } catch (error) {
         console.error("Error uploading file:", error);
@@ -196,7 +183,7 @@ export const ExaminePatient = () => {
           <Datepicker
             minDate={new Date(1900, 0, 1)}
             maxDate={new Date()}
-            value={state.birthDate.toISOString().split("T")[0]}
+            value={convertDateToString(state.birthDate)}
             onSelectedDateChanged={(date) => {
               setState((prevState) => ({
                 ...prevState,

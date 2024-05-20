@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4000/api";
+export const API_URL = "http://localhost:4000/api";
 
 export const examinePatient = async (
   formData: FormData,
@@ -17,6 +17,30 @@ export const examinePatient = async (
         }
       },
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAlzheimerPatientCount = async () => {
+  try {
+    return await axios.get(`${API_URL}/getAlzheimerPatientCount`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAlzheimerPredictionCount = async () => {
+  try {
+    return await axios.get(`${API_URL}/getAlzheimerPredictionCount`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAlzheimerCountsByAgeAndType = async () => {
+  try {
+    return await axios.get(`${API_URL}/GetAlzheimerCountsByAgeAndType`);
   } catch (error) {
     throw error;
   }

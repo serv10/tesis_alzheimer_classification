@@ -16,7 +16,13 @@ import cors from "cors";
 import morgan from "morgan";
 import multer from "multer";
 import path from "path";
-import mysql from "mysql2/promise";
+import mysql from "mysql2";
+import type {
+  RowDataPacket,
+  PoolOptions,
+  ProcedureCallPacket,
+  ResultSetHeader,
+} from "mysql2";
 import { classifyImage, getClassificationPosition } from "./predictImage";
 
 const storage = multer.diskStorage({
@@ -59,20 +65,16 @@ const upload = multer({
 const app = express();
 const port = process.env.PORT || 4001;
 
-const pool = mysql.createPool({
+const access: PoolOptions = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
   password: process.env.DB_PASS,
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
-  connectionLimit: 10,
-  maxIdle: 10,
-  idleTimeout: 60000,
-  queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
-});
+};
+
+const pool = mysql.createPool(access);
 
 app.use(cors());
 app.use(morgan("dev"));
@@ -105,25 +107,76 @@ app.post("/api/examinePatient", upload.single("image"), async (req, res) => {
   try {
     const { dni, name, lastName, password, birthDate } = req.body;
 
-    await pool.execute("CALL ExaminePatient(?,?,?,?,?,?,?,?)", [
-      dni,
-      name,
-      lastName,
-      password,
-      file.path,
-      realIndex,
-      predictionIndex,
-      birthDate,
-    ]);
-
-    // 5. Return response
-    return res.status(200).json({
-      message: "File uploaded successfully",
-      prediction: classifyImage(prediction),
-    });
+    pool.execute<ProcedureCallPacket<ResultSetHeader>>(
+      "CALL ExaminePatient(?,?,?,?,?,?,?,?)",
+      [
+        dni,
+        name,
+        lastName,
+        password,
+        file.path,
+        realIndex,
+        predictionIndex,
+        birthDate,
+      ],
+      (_err: any, _result: ResultSetHeader) => {
+        return res.status(200).json({
+          message: "File uploaded successfully",
+          prediction: classifyImage(prediction),
+        });
+      }
+    );
   } catch (error: any) {
     return res.status(500).json({
       message: `[examinePatient]: ${error.message}`,
+    });
+  }
+});
+
+app.get("/api/getAlzheimerPatientCount", (_req, res) => {
+  try {
+    pool.execute<ProcedureCallPacket<[RowDataPacket[], ResultSetHeader]>>(
+      "CALL GetAlzheimerCountsByClass()",
+      (_err: any, result: [RowDataPacket[], ResultSetHeader]) => {
+        const [rowDataPackets, _resultSetHeader] = result;
+        return res.status(200).json(rowDataPackets);
+      }
+    );
+  } catch (error: any) {
+    return res.status(500).json({
+      message: `[getAlzheimerPatientCount]: ${error.message}`,
+    });
+  }
+});
+
+app.get("/api/getAlzheimerPredictionCount", (_req, res) => {
+  try {
+    pool.execute<ProcedureCallPacket<[RowDataPacket[], ResultSetHeader]>>(
+      "CALL GetPredictionCountsByClass()",
+      (_err: any, result: [RowDataPacket[], ResultSetHeader]) => {
+        const [rowDataPackets, _resultSetHeader] = result;
+        return res.status(200).json(rowDataPackets);
+      }
+    );
+  } catch (error: any) {
+    return res.status(500).json({
+      message: `[getAlzheimerPredictionCount]: ${error.message}`,
+    });
+  }
+});
+
+app.get("/api/GetAlzheimerCountsByAgeAndType", (_req, res) => {
+  try {
+    pool.execute<ProcedureCallPacket<[RowDataPacket[], ResultSetHeader]>>(
+      "CALL GetAlzheimerCountsByAgeAndType()",
+      (_err: any, result: [RowDataPacket[], ResultSetHeader]) => {
+        const [rowDataPackets, _resultSetHeader] = result;
+        return res.status(200).json(rowDataPackets);
+      }
+    );
+  } catch (error: any) {
+    return res.status(500).json({
+      message: `[GetAlzheimerCountsByAgeAndType]: ${error.message}`,
     });
   }
 });
