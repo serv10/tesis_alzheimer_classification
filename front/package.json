@@ -1,34 +1,27 @@
 {
-  "name": "front-alzheimer-classification",
+  "name": "front",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@astrojs/check": "0.6.0",
-    "@astrojs/react": "3.3.2",
-    "@astrojs/tailwind": "^5.1.0",
-    "@fontsource-variable/mulish": "^5.0.18",
-    "@iconify-json/mdi": "^1.1.66",
-    "@iconify/react": "^4.1.1",
-    "@types/axios": "^0.14.0",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
-    "astro": "4.7.1",
-    "astro-icon": "^1.1.0",
-    "axios": "^1.6.8",
-    "chart.js": "^4.4.3",
-    "flowbite-react": "^0.9.0",
-    "next": "^14.2.3",
-    "react": "^18.3.0",
-    "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.3.0",
+    "@heroicons/vue": "^2.2.0",
+    "@tanstack/vue-table": "^8.21.0",
+    "axios": "^1.13.2",
+    "chart.js": "^4.5.1",
+    "vue": "^3.5.24",
+    "vue-chartjs": "^5.3.3",
+    "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.4.5"
+    "vite": "^7.2.4"
   }
 }

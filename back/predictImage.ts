@@ -1,52 +1,22 @@
+// Classification mapping - order matches model prediction AND database
+// Model: mild=0, moderate=1, non=2, verymild=3
+// DB:    mild=1, moderate=2, non=3, verymild=4
 export const classificationImages: { [key: string]: string } = {
-  non: "Non Demented",
-  verymild: "Very Mild Demented",
   mild: "Mild Demented",
   moderate: "Moderate Demented",
+  non: "Non Demented",
+  verymild: "Very Mild Demented",
 };
 
-const createArrayAcurracy = (numberTrue: number) => {
-  let array: boolean[] = new Array(numberTrue)
-    .fill(true)
-    .concat(new Array(100 - numberTrue).fill(false));
+const classificationKeys = Object.keys(classificationImages);
 
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-
-  return array;
+// Get classification key by model prediction index (0-3)
+export const getClassificationKeyByIndex = (index: number): string => {
+  return classificationKeys[index];
 };
 
-const arrayAccuracy: boolean[] = createArrayAcurracy(95);
-
-const getRandomValue = (array: boolean[]): boolean => {
-  const randomIndex = Math.floor(Math.random() * array.length);
-  return array[randomIndex];
-};
-
-export const getClassificationPosition = (realValue: string): number => {
-  const keys = Object.keys(classificationImages);
-  return keys.indexOf(realValue);
-};
-
-const chooseAnotherClassificationValue = (
-  realClassification: string
-): string => {
-  let keys = Object.keys(classificationImages);
-  keys = keys.filter((key) => key !== realClassification);
-  return keys[Math.floor(Math.random() * keys.length)];
-};
-
-export const classifyImage = (real: string): string => {
-  const predictionCorrect: boolean = getRandomValue(arrayAccuracy);
-
-  let prediction: string = "";
-
-  if (predictionCorrect) {
-    prediction = real;
-  } else {
-    prediction = chooseAnotherClassificationValue(real);
-  }
-  return prediction;
+// Get index (0-3) from classification key
+// Used for real value: index + 1 = DB ID
+export const getClassificationKeyPosition = (value: string): number => {
+  return classificationKeys.indexOf(value);
 };

@@ -1,0 +1,84 @@
+# Alzheimer Classification - Docker Compose
+# Levanta BD, Backend Node.js y Frontend Vue
+
+services:
+  # ===========================================
+  # Database Service - SQL Server 2022
+  # ===========================================
+  db:
+    build:
+      context: ./bd
+      dockerfile: Dockerfile
+    container_name: alzheimer-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DB_PASSWORD:-P@ssw0rd1234!}
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - alzheimer-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -C -Q "SELECT 1" || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  # ===========================================
+  # Backend Service - Node.js + Express
+  # ===========================================
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: alzheimer-backend
+    environment:
+      - PORT=4001
+      - DB_HOST=db
+      - DB_USER=sa
+      - DB_PWD=${DB_PASSWORD:-P@ssw0rd1234!}
+      - DB_NAME=AlzheimerClassification
+      - DB_PORT=1433
+      - PATH_UPLOADED_IMAGES=/app/uploads
+      - PATH_MODEL_JSON=/app/model/model.json
+    ports:
+      - "4001:4001"
+    volumes:
+      - backend_uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - alzheimer-network
+
+  # ===========================================
+  # Frontend Service - Vue 3 + Vite
+  # ===========================================
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: alzheimer-frontend
+    environment:
+      - VITE_API_URL=http://localhost:4001
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - alzheimer-network
+
+# Volumes
+volumes:
+  sql_data:
+    driver: local
+  backend_uploads:
+    driver: local
+
+# Networks
+networks:
+  alzheimer-network:
+    driver: bridge
