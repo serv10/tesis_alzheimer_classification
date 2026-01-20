@@ -2,7 +2,7 @@
 
 .PHONY: help up down logs clean db backend frontend
 
-COMPOSE = docker-compose
+COMPOSE = docker compose
 
 help: ## Muestra esta ayuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
