@@ -91,32 +91,32 @@ make clean
 
 ```bash
 # Levantar todo el sistema
-docker-compose up -d --build
+docker compose up -d --build
 
 # Ver logs de todos los servicios
-docker-compose logs -f
+docker compose logs -f
 
 # Detener todos los servicios
-docker-compose down
+docker compose down
 
 # Limpiar contenedores y volúmenes
-docker-compose down -v --remove-orphans
+docker compose down -v --remove-orphans
 ```
 
 #### Comandos específicos por servicio:
 
 ```bash
 # Solo base de datos
-docker-compose up -d --build db
-docker-compose logs -f db
+docker compose up -d --build db
+docker compose logs -f db
 
 # Solo backend (incluye BD)
-docker-compose up -d --build db backend
-docker-compose logs -f backend
+docker compose up -d --build db backend
+docker compose logs -f backend
 
 # Solo frontend
-docker-compose up -d --build frontend
-docker-compose logs -f frontend
+docker compose up -d --build frontend
+docker compose logs -f frontend
 
 # Acceder a la consola SQL Server
 docker exec -it alzheimer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "P@ssw0rd1234!" -C
@@ -158,12 +158,12 @@ La base de datos SQL Server puede tardar en estar lista. El backend esperará au
 
 ```bash
 # Verificar el estado de los contenedores
-docker-compose ps
+docker compose ps
 
 # Ver logs específicos de la BD
 make db-logs
 # o
-docker-compose logs -f db
+docker compose logs -f db
 ```
 
 ### Reiniciar desde cero
@@ -174,8 +174,8 @@ make destroy
 make up
 
 # Con Docker Compose
-docker-compose down -v --remove-orphans --rmi all
-docker-compose up -d --build
+docker compose down -v --remove-orphans --rmi all
+docker compose up -d --build
 ```
 
 ---
